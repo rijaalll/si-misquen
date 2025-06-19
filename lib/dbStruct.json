@@ -1,0 +1,57 @@
+[
+    {
+        "koperasi": {
+
+            "user": {
+                "(unique id)": {
+                    "id": "(unique id)",
+                    "userName": "(username)",
+                    "fullName": "(full name)",
+                    "password": "(password)",
+                    "role": "(admin, teller, user)",
+                    "detail": { // if role = teller or user 
+                        "nik": "(nomor induk kependudukan)",
+                        "nkk": "(nomor kartu keluarga)",
+                        "hari": "(hari lahir)",
+                        "tanggal": "(tanggal lahir)",
+                        "bulan": "(bulan lahir)",
+                        "tahun": "(tahun lahir)",
+                        "gender": "laki-laki, perempuan dan other",
+                        "provinsi": "(provinsi)",
+                        "kota": "(kabupaten / kota)",
+                        "kecamatan": "(kecamatan)",
+                        "desa": "(desa)",
+                        "rw": "(rw)",
+                        "rt": "(rt)",
+                        "anggota": { // if role = user
+                            "pekerjaan": "(pekerjaan)",
+                            "pendapatan": "(pendapatan /bln)"
+                        }
+                    }
+                }
+            },
+
+            "pinjaman": {
+                "(unique id)": {
+                    "id": "(unique id)",
+                    "userId": "(unique id user)",
+                    "nama": "(nama peminjam)",
+                    "tenor": "(tenor pinjaman)",
+                    "jumlah": "(jumlah pinjaman)",
+                    "bunga": "(bunga pinjaman)",
+                    "angsuran": "(angsuran pinjaman)",
+                    "status": "(pinjam, lunas, gagal)",
+                    "tanggal": "(tanggal pinjaman)"
+
+                }
+            },
+
+            "transaksi": {
+                "(unique id)": {
+                    "status": "(simpan or pinjam)"
+                }
+            }
+
+        }
+    }
+]
