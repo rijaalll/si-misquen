@@ -1,13 +1,18 @@
-Si-Misquen 💰💸
-Halo bro/sis! 👋 Ini dia aplikasi koperasi yang bikin transaksi simpan pinjam jadi lebih asyik. Dibangun pake teknologi kekinian: Next.js, dibootstrap pake create-next-app. Kita juga pake Tailwind CSS buat styling yang ngebut dan Firebase Realtime DB buat nyimpen data anti ribet.
-Gaspol, Siapin Dulu! 🚀
+# Si-Misquen (Aplikasi Koperasi Gaul) 💰💸
+
+Halo bro/sis! 👋 Ini dia aplikasi koperasi yang bikin transaksi simpan pinjam jadi lebih asyik. Dibangun pake teknologi kekinian: [Next.js](https://nextjs.org), dibootstrap pake [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app). Kita juga pake Tailwind CSS buat styling yang ngebut dan Firebase Realtime DB buat nyimpen data anti ribet.
+
+## Gaspol, Siapin Dulu! 🚀
+
 Sebelum kita ngoding, pastiin lo udah punya:
 
-Node.js (versi rekomendasi: sesuai package.json atau paling baru yang stabil)
-npm/yarn/pnpm/bun (pilih salah satu yang paling lo suka!)
-Firebase Project yang udah disetup (penting banget buat database-nya!)
+- Node.js (versi rekomendasi: sesuai `package.json` atau paling baru yang stabil)
+- npm/yarn/pnpm/bun (pilih salah satu yang paling lo suka!)
+- Firebase Project yang udah disetup (penting banget buat database-nya!)
 
-FYI: Jangan lupa bikin file firebaseConfig.js di root project lo. Isinya kayak gini ya:
+**FYI:** Jangan lupa bikin file `firebaseConfig.js` di root project lo. Isinya kayak gini ya:
+
+```javascript
 // firebaseConfig.js
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
@@ -30,10 +35,15 @@ const auth = getAuth(app);
 const database = getDatabase(app);
 
 export { auth, database };
+```
 
-Ganti YOUR_... itu sama credential Firebase project lo ya! Ini super duper penting biar aplikasi bisa nyambung ke database. Jangan sampai salah ketik!
-Cara Install (Anti Pusing) 🛠️
+Ganti `YOUR_...` itu sama credential Firebase project lo ya! Ini super duper penting biar aplikasi bisa nyambung ke database. Jangan sampai salah ketik!
+
+## Cara Install (Anti Pusing) 🛠️
+
 Oke, sekarang waktunya install dependensi. Gampang banget kok:
+
+```bash
 npm install
 # atau kalo lo anak yarn:
 yarn install
@@ -41,10 +51,15 @@ yarn install
 pnpm install
 # atau bun (paling ngebut katanya):
 bun install
+```
 
 Pilih satu aja ya, jangan maruk! 😂
-Biar Keliatan di Browser (Ngeng!) 🏎️💨
+
+## Biar Keliatan di Browser (Ngeng!) 🏎️💨
+
 Setelah semua dependensi keinstall, saatnya nyalain server development:
+
+```bash
 npm run dev
 # atau
 yarn dev
@@ -52,39 +67,31 @@ yarn dev
 pnpm dev
 # atau
 bun dev
+```
 
-Abis itu, buka browser kesayangan lo dan ketik alamat ini: http://localhost:4321. Taraaa! Aplikasi koperasi lo udah nongol!
-Lo bisa langsung cus ngedit-ngedit di app/page.js. Jangan khawatir, begitu lo save, perubahannya langsung update otomatis di browser. Mantap kan?
-Kita juga udah pake next/font biar font-nya makin kece dan dioptimasi otomatis. Pake font Geist dari Vercel lho!
-Pengguna Dummy (Buat Tes-tes) 🧪
-Di project ini, ada beberapa user dummy buat lo coba-coba. Lo bisa intip di lib/dummyUser.json. Ini detailnya:
+Abis itu, buka browser kesayangan lo dan ketik alamat ini: [http://localhost:4321](http://localhost:4321). Taraaa! Aplikasi koperasi lo udah nongol!
 
+Lo bisa langsung cus ngedit-ngedit di `app/page.js`. Jangan khawatir, begitu lo save, perubahannya langsung update otomatis di browser. Mantap kan?
 
+Kita juga udah pake `next/font` biar font-nya makin kece dan dioptimasi otomatis. Pake font Geist dari Vercel lho!
 
-Username
-Password
-Role
+## Pengguna Dummy (Buat Tes-tes) 🧪
 
+Di project ini, ada beberapa user dummy buat lo coba-coba. Lo bisa intip di `lib/dummyUser.json`. Ini detailnya:
 
+| Username | Password       | Role  |
+|----------|----------------|-------|
+| admin    | adminpassword  | admin |
+| miskin   | miskin123      | user  |
+| panjul   | panjul123      | teller|
 
-admin
-adminpassword
-admin
+**Catatan:** Password di sini cuma buat demo ya! Di real world, jangan pernah nyimpen password plain text kayak gini. Bahaya bro!
 
+## Struktur Database (Biar Ngerti) 📊
 
-miskin
-miskin123
-user
+Buat lo yang kepo sama struktur data di Firebase, kita udah siapin `lib/dbStruct.json`. Isinya kira-kira kayak gini:
 
-
-panjul
-panjul123
-teller
-
-
-Catatan: Password di sini cuma buat demo ya! Di real world, jangan pernah nyimpen password plain text kayak gini. Bahaya bro!
-Struktur Database (Biar Ngerti) 📊
-Buat lo yang kepo sama struktur data di Firebase, kita udah siapin lib/dbStruct.json. Isinya kira-kira kayak gini:
+```json
 [
   {
     "koperasi": {
@@ -184,15 +191,21 @@ Buat lo yang kepo sama struktur data di Firebase, kita udah siapin lib/dbStruct.
     }
   }
 ]
+```
 
-Belajar Lebih Lanjut (Biar Makin Jago) 🧠
+## Belajar Lebih Lanjut (Biar Makin Jago) 🧠
+
 Pengen lebih jago Next.js? Sikat aja resource di bawah ini:
 
-Next.js Documentation - Pelajari fitur-fitur keren Next.js dan API-nya.
-Learn Next.js - Tutorial interaktif buat lo yang suka belajar sambil praktik.
+- [Next.js Documentation](https://nextjs.org/docs) - Pelajari fitur-fitur keren Next.js dan API-nya.
+- [Learn Next.js](https://nextjs.org/learn) - Tutorial interaktif buat lo yang suka belajar sambil praktik.
 
-Jangan lupa cek juga the Next.js GitHub repository buat ngasih feedback atau kontribusi. Welcome banget!
-Deploy ke Vercel (Biar Online Terus) ☁️
-Cara paling gampang biar aplikasi lo online dan bisa diakses siapa aja itu pake Vercel Platform. Mereka ini yang bikin Next.js lho!
-Cek Next.js deployment documentation buat panduan lebih lengkapnya.
+Jangan lupa cek juga [the Next.js GitHub repository](https://github.com/vercel/next.js) buat ngasih feedback atau kontribusi. Welcome banget!
+
+## Deploy ke Vercel (Biar Online Terus) ☁️
+
+Cara paling gampang biar aplikasi lo online dan bisa diakses siapa aja itu pake [Vercel Platform](https://vercel.com). Mereka ini yang bikin Next.js lho!
+
+Cek [Next.js deployment documentation](https://nextjs.org/docs/deployment) buat panduan lebih lengkapnya.
+
 Happy ngoding! Jangan lupa ngopi! ☕✨
