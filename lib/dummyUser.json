@@ -1,0 +1,76 @@
+{
+  "koperasi": {
+    "user": {
+      "adminUser001": {
+        "detail": {
+          "bulan": "7",
+          "desa": "Gondangdia",
+          "gender": "laki-laki",
+          "hari": "1",
+          "kecamatan": "Menteng",
+          "kota": "Jakarta Pusat",
+          "nik": "1234567890123456",
+          "nkk": "6543210987654321",
+          "provinsi": "DKI Jakarta",
+          "rt": "001",
+          "rw": "001",
+          "tahun": "1980",
+          "tanggal": "15"
+        },
+        "fullName": "Administrator Koperasi",
+        "id": "adminUser001",
+        "password": "adminpassword",
+        "role": "admin",
+        "userName": "admin"
+      },
+      "cd648d3a-8a06-4049-9bfd-ead4960a6c72": {
+        "detail": {
+          "anggota": {
+            "pekerjaan": "mulung",
+            "pendapatan": "20000"
+          },
+          "bulan": "12",
+          "desa": "ga ngerti",
+          "gender": "laki-laki",
+          "hari": "kamis",
+          "kecamatan": "ga ngerti",
+          "kota": "galek",
+          "nik": "12345678",
+          "nkk": "12345678",
+          "provinsi": "jatim",
+          "rt": "01",
+          "rw": "01",
+          "tahun": "1945",
+          "tanggal": "20"
+        },
+        "fullName": "si miskin",
+        "id": "cd648d3a-8a06-4049-9bfd-ead4960a6c72",
+        "password": "miskin123",
+        "role": "user",
+        "userName": "miskin"
+      },
+      "f08513d2-ce72-4ba6-b669-fa4f468e572b": {
+        "detail": {
+          "bulan": "12",
+          "desa": "ga ngerti",
+          "gender": "other",
+          "hari": "kamis",
+          "kecamatan": "ga ngerti",
+          "kota": "galek",
+          "nik": "123456789",
+          "nkk": "123456789",
+          "provinsi": "jatim",
+          "rt": "01",
+          "rw": "01",
+          "tahun": "2020",
+          "tanggal": "10"
+        },
+        "fullName": "panjul anak baik",
+        "id": "f08513d2-ce72-4ba6-b669-fa4f468e572b",
+        "password": "panjul123",
+        "role": "teller",
+        "userName": "panjul"
+      }
+    }
+  }
+}

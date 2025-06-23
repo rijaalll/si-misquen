@@ -1,7 +1,6 @@
 [
     {
         "koperasi": {
-
             "user": {
                 "(unique id)": {
                     "id": "(unique id)",
@@ -31,24 +30,66 @@
                 }
             },
 
-            "pinjaman": {
-                "(unique id)": {
-                    "id": "(unique id)",
-                    "userId": "(unique id user)",
-                    "nama": "(nama peminjam)",
-                    "tenor": "(tenor pinjaman)",
-                    "jumlah": "(jumlah pinjaman)",
-                    "bunga": "(bunga pinjaman)",
-                    "angsuran": "(angsuran pinjaman)",
-                    "status": "(pinjam, lunas, gagal)",
-                    "tanggal": "(tanggal pinjaman)"
-
-                }
-            },
-
-            "transaksi": {
-                "(unique id)": {
-                    "status": "(simpan or pinjam)"
+            "data": {
+                "transaksi": {
+                    "simpan": {
+                        "(unique id)": {
+                            "userId": "(user id anggota)",
+                            "total": "(total saldo)",
+                            "detail": {
+                                "(unique id)": {
+                                    "status": "(tarik / simpan)",
+                                    "nominal": "(nominal transaksi jika status = simpan maka total saldo + nominal, jika status = tarik maka total saldo - nominal)",
+                                    "detail": {
+                                        "tanggal": "(tanggal transaksi)",
+                                        "bulan": "(bulan transaksi)",
+                                        "tahun": "(tahun transaksi)",
+                                        "jam": "(jam transaksi)"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "pinjam": {
+                        "(unique id)": {
+                            "userId": "(user id anggota peminjam)",
+                            "total": "(jumlah pinjaman)",
+                            "status": "(pending, disetujui, ditolak)",
+                            "tenor": {
+                                "bulan": "(jumlah bulan tenor)",
+                                "bunga": "(bunga per bulan)"
+                            },
+                            "detail": { //misal tenor 3 bulan
+                                "(unique id bulan ke 1)": {
+                                    "status": "(belum bayar, sudah bayar)",
+                                    "totalTagihan": "(total tagihan hasil bagi total pinjaman + bunga per bulan)",
+                                    "tempo": {
+                                        "tanggal": "(tanggal tempo)",
+                                        "bulan": "(bulan tempo)",
+                                        "tahun": "(tahun tempo)"
+                                    }
+                                },
+                                "(unique id bulan ke 2)": {
+                                    "status": "(belum bayar, sudah bayar)",
+                                    "totalTagihan": "(total tagihan hasil bagi total pinjaman + bunga per bulan)",
+                                    "tempo": {
+                                        "tanggal": "(tanggal tempo)",
+                                        "bulan": "(bulan tempo)",
+                                        "tahun": "(tahun tempo)"
+                                    }
+                                },
+                                "(unique id bulan ke 3)": {
+                                    "status": "(belum bayar, sudah bayar)",
+                                    "totalTagihan": "(total tagihan hasil bagi total pinjaman + bunga per bulan)",
+                                    "tempo": {
+                                        "tanggal": "(tanggal tempo)",
+                                        "bulan": "(bulan tempo)",
+                                        "tahun": "(tahun tempo)"
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
