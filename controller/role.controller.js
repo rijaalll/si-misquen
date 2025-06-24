@@ -1,11 +1,10 @@
-// app/components/ProtectedLayout.js
+// ProtectedRole.js
 // Komponen layout yang melindungi rute berdasarkan role pengguna.
-
 "use client";
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 
 const ProtectedLayout = ({ children, allowedRoles }) => {
   const { currentUser, loading, logout } = useAuth();
@@ -14,18 +13,15 @@ const ProtectedLayout = ({ children, allowedRoles }) => {
   useEffect(() => {
     if (!loading) {
       if (!currentUser) {
-        // Jika tidak ada user, redirect ke login
         router.push('/');
       } else if (!allowedRoles.includes(currentUser.role)) {
-        // Jika user tidak memiliki role yang diizinkan, redirect ke halaman awal
-        alert('Anda tidak memiliki akses ke halaman ini.'); // Menggunakan alert sebagai placeholder
+        alert('Anda tidak memiliki akses ke halaman ini.');
         router.push('/');
       }
     }
   }, [currentUser, loading, router, allowedRoles]);
 
   if (loading || !currentUser || !allowedRoles.includes(currentUser.role)) {
-    // Tampilkan loading atau apapun selama proses otentikasi
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <div className="text-xl font-semibold text-gray-700">Memuat...</div>

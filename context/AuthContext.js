@@ -5,7 +5,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth, database } from '../../firebaseConfig'; // Pastikan path ini benar
+import { auth, database } from '@/utils/firebaseConfig';
 import { ref, get } from 'firebase/database';
 import { useRouter } from 'next/navigation';
 

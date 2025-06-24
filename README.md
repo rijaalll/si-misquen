@@ -1,4 +1,4 @@
-# Si-Misquen (Aplikasi Koperasi Gaul) 💰💸
+# Si-Misquen 💰💸
 
 Halo bro/sis! 👋 Ini dia aplikasi koperasi yang bikin transaksi simpan pinjam jadi lebih asyik. Dibangun pake teknologi kekinian: [Next.js](https://nextjs.org), dibootstrap pake [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app). Kita juga pake Tailwind CSS buat styling yang ngebut dan Firebase Realtime DB buat nyimpen data anti ribet.
 
