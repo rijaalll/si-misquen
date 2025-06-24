@@ -4,8 +4,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from 'react';
-import ProtectedLayout from '@/controller/role.controller'; // Mengimpor ProtectedLayout
-import { database } from '@/utils/firebaseConfig';
+import ProtectedLayout from '../../controller/role.controller'; // Mengubah jalur impor relatif
+import { database } from '../../utils/firebaseConfig'; // Mengubah jalur impor relatif
 import { ref, onValue, set, remove, update } from 'firebase/database';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -17,7 +17,7 @@ import {
   ExclamationTriangleIcon,
   UserGroupIcon // Icon baru untuk manajemen pengguna
 } from '@heroicons/react/24/outline';
-import ConfirmationModal from './ConfirmationModal'; // Mengimpor modal konfirmasi
+import ConfirmationModal from './ConfirmationModal'; // Jalur impor relatif sudah benar
 
 export default function UserManagementView() {
   const [users, setUsers] = useState([]);
@@ -89,7 +89,37 @@ export default function UserManagementView() {
         .then(data => {
           setProvinces(data.data);
           if (currentUserData && currentUserData.detail?.provinsi?.code) {
-            setSelectedProvinceCode(currentUserData.detail.provinsi.code);
+            const initialProvince = data.data.find(p => p.code === currentUserData.detail.provinsi.code);
+            if (initialProvince) {
+              setSelectedProvinceCode(initialProvince.code);
+              // Penting: Perbarui newUserData.detail.provinsi dengan nama dan kode yang benar
+              setNewUserData(prev => ({
+                ...prev,
+                detail: {
+                  ...prev.detail,
+                  provinsi: { code: initialProvince.code, name: initialProvince.name },
+                }
+              }));
+            } else {
+              // Jika provinsi tidak ditemukan, reset
+              setSelectedProvinceCode('');
+              setNewUserData(prev => ({
+                ...prev,
+                detail: {
+                  ...prev.detail,
+                  provinsi: { code: '', name: '' },
+                }
+              }));
+            }
+          } else {
+            setSelectedProvinceCode(''); // Reset jika tidak ada provinsi atau pengguna baru
+            setNewUserData(prev => ({
+              ...prev,
+              detail: {
+                ...prev.detail,
+                provinsi: { code: '', name: '' },
+              }
+            }));
           }
         })
         .catch(error => console.error("Error fetching provinces:", error));
@@ -101,6 +131,17 @@ export default function UserManagementView() {
       setSelectedProvinceCode('');
       setSelectedRegencyCode('');
       setSelectedDistrictCode('');
+      // Reset newUserData.detail ketika modal ditutup
+      setNewUserData(prev => ({
+          ...prev,
+          detail: {
+              ...prev.detail,
+              provinsi: { code: '', name: '' },
+              kota: { code: '', name: '' },
+              kecamatan: { code: '', name: '' },
+              desa: { code: '', name: '' },
+          }
+      }));
     }
   }, [showUserModal, currentUserData]);
 
@@ -116,18 +157,45 @@ export default function UserManagementView() {
         })
         .then(data => {
           setRegencies(data.data);
-          if (currentUserData && currentUserData.detail?.kota?.code && data.data.some(item => item.code === currentUserData.detail.kota.code)) {
-            setSelectedRegencyCode(currentUserData.detail.kota.code);
+          // Hanya set kota/kabupaten jika kode provinsi saat ini cocok dengan kode provinsi di currentUserData
+          // Ini mencegah data yang salah dari pemuatan provinsi sebelumnya
+          if (currentUserData && currentUserData.detail?.kota?.code && selectedProvinceCode === currentUserData.detail.provinsi.code) {
+            const initialRegency = data.data.find(r => r.code === currentUserData.detail.kota.code);
+            if (initialRegency) {
+              setSelectedRegencyCode(initialRegency.code);
+              setNewUserData(prev => ({
+                ...prev,
+                detail: {
+                  ...prev.detail,
+                  kota: { code: initialRegency.code, name: initialRegency.name },
+                }
+              }));
+            } else {
+              setSelectedRegencyCode(''); // Reset jika kota tidak ditemukan
+              setNewUserData(prev => ({ // Reset newUserData jika tidak ditemukan
+                ...prev,
+                detail: {
+                  ...prev.detail,
+                  kota: { code: '', name: '' },
+                }
+              }));
+            }
           } else {
-            setSelectedRegencyCode('');
+            setSelectedRegencyCode(''); // Reset jika tidak ada kota atau provinsi berubah
+            setNewUserData(prev => ({
+                ...prev,
+                detail: {
+                    ...prev.detail,
+                    kota: { code: '', name: '' },
+                }
+            }));
           }
-          setDistricts([]);
+          setDistricts([]); // Reset dropdown yang bergantung
           setVillages([]);
-          setNewUserData(prev => ({
+          setNewUserData(prev => ({ // Pastikan level yang lebih rendah direset di newUserData
               ...prev,
               detail: {
                   ...prev.detail,
-                  kota: { code: '', name: '' },
                   kecamatan: { code: '', name: '' },
                   desa: { code: '', name: '' },
               }
@@ -150,7 +218,7 @@ export default function UserManagementView() {
           }
       }));
     }
-  }, [selectedProvinceCode, currentUserData]);
+  }, [selectedProvinceCode, currentUserData]); // Ditambahkan currentUserData sebagai dependensi untuk evaluasi ulang saat pengeditan
 
   // Mengambil Kecamatan berdasarkan Kabupaten/Kota yang dipilih
   useEffect(() => {
@@ -164,17 +232,42 @@ export default function UserManagementView() {
         })
         .then(data => {
           setDistricts(data.data);
-          if (currentUserData && currentUserData.detail?.kecamatan?.code && data.data.some(item => item.code === currentUserData.detail.kecamatan.code)) {
-            setSelectedDistrictCode(currentUserData.detail.kecamatan.code);
+          if (currentUserData && currentUserData.detail?.kecamatan?.code && selectedRegencyCode === currentUserData.detail.kota.code) {
+            const initialDistrict = data.data.find(d => d.code === currentUserData.detail.kecamatan.code);
+            if (initialDistrict) {
+              setSelectedDistrictCode(initialDistrict.code);
+              setNewUserData(prev => ({
+                ...prev,
+                detail: {
+                  ...prev.detail,
+                  kecamatan: { code: initialDistrict.code, name: initialDistrict.name },
+                }
+              }));
+            } else {
+              setSelectedDistrictCode('');
+              setNewUserData(prev => ({
+                ...prev,
+                detail: {
+                  ...prev.detail,
+                  kecamatan: { code: '', name: '' },
+                }
+              }));
+            }
           } else {
             setSelectedDistrictCode('');
+            setNewUserData(prev => ({
+                ...prev,
+                detail: {
+                    ...prev.detail,
+                    kecamatan: { code: '', name: '' },
+                }
+            }));
           }
-          setVillages([]);
-          setNewUserData(prev => ({
+          setVillages([]); // Reset dropdown yang bergantung
+          setNewUserData(prev => ({ // Pastikan level yang lebih rendah direset di newUserData
               ...prev,
               detail: {
                   ...prev.detail,
-                  kecamatan: { code: '', name: '' },
                   desa: { code: '', name: '' },
               }
           }));
@@ -207,15 +300,34 @@ export default function UserManagementView() {
         })
         .then(data => {
           setVillages(data.data);
-          setNewUserData(prev => ({
-            ...prev,
-            detail: {
-                ...prev.detail,
-                desa: currentUserData && currentUserData.detail?.desa?.code && data.data.some(item => item.code === currentUserData.detail.desa.code)
-                    ? currentUserData.detail.desa
-                    : { code: '', name: '' },
+          if (currentUserData && currentUserData.detail?.desa?.code && selectedDistrictCode === currentUserData.detail.kecamatan.code) {
+            const initialVillage = data.data.find(v => v.code === currentUserData.detail.desa.code);
+            if (initialVillage) {
+              setNewUserData(prev => ({
+                ...prev,
+                detail: {
+                  ...prev.detail,
+                  desa: { code: initialVillage.code, name: initialVillage.name },
+                }
+              }));
+            } else {
+              setNewUserData(prev => ({
+                ...prev,
+                detail: {
+                  ...prev.detail,
+                  desa: { code: '', name: '' },
+                }
+              }));
             }
-        }));
+          } else {
+            setNewUserData(prev => ({
+                ...prev,
+                detail: {
+                    ...prev.detail,
+                    desa: { code: '', name: '' },
+                }
+            }));
+          }
         })
         .catch(error => console.error(`Error fetching villages for ${selectedDistrictCode}:`, error));
     } else {
@@ -309,6 +421,7 @@ export default function UserManagementView() {
         }
       }
     })));
+    // Set selected codes based on current user data to trigger API fetches
     setSelectedProvinceCode(user.detail?.provinsi?.code || '');
     setSelectedRegencyCode(user.detail?.kota?.code || '');
     setSelectedDistrictCode(user.detail?.kecamatan?.code || '');
@@ -332,6 +445,7 @@ export default function UserManagementView() {
       showMessage('Nama Pengguna, Kata Sandi, dan Peran harus diisi.', 'error');
       return;
     }
+    // Validasi domisili hanya jika peran adalah user atau teller
     if ((newUserData.role === 'user' || newUserData.role === 'teller') &&
         (!newUserData.detail.provinsi.code || !newUserData.detail.kota.code ||
          !newUserData.detail.kecamatan.code || !newUserData.detail.desa.code)) {
@@ -370,14 +484,15 @@ export default function UserManagementView() {
 
   const handleUserChange = useCallback((e) => {
     const { name, value } = e.target;
-    if (name.startsWith('detail.provinsi')) {
+    // Handle changes for regional dropdowns
+    if (name === 'detail.provinsi.code') {
         const selectedOption = provinces.find(p => p.code === value);
         setNewUserData(prev => ({
             ...prev,
             detail: {
                 ...prev.detail,
                 provinsi: selectedOption ? { code: value, name: selectedOption.name } : { code: '', name: '' },
-                kota: { code: '', name: '' },
+                kota: { code: '', name: '' }, // Reset dependent fields
                 kecamatan: { code: '', name: '' },
                 desa: { code: '', name: '' },
             }
@@ -385,31 +500,31 @@ export default function UserManagementView() {
         setSelectedProvinceCode(value);
         setSelectedRegencyCode('');
         setSelectedDistrictCode('');
-    } else if (name.startsWith('detail.kota')) {
+    } else if (name === 'detail.kota.code') {
         const selectedOption = regencies.find(r => r.code === value);
         setNewUserData(prev => ({
             ...prev,
             detail: {
                 ...prev.detail,
                 kota: selectedOption ? { code: value, name: selectedOption.name } : { code: '', name: '' },
-                kecamatan: { code: '', name: '' },
+                kecamatan: { code: '', name: '' }, // Reset dependent fields
                 desa: { code: '', name: '' },
             }
         }));
         setSelectedRegencyCode(value);
         setSelectedDistrictCode('');
-    } else if (name.startsWith('detail.kecamatan')) {
+    } else if (name === 'detail.kecamatan.code') {
         const selectedOption = districts.find(d => d.code === value);
         setNewUserData(prev => ({
             ...prev,
             detail: {
                 ...prev.detail,
                 kecamatan: selectedOption ? { code: value, name: selectedOption.name } : { code: '', name: '' },
-                desa: { code: '', name: '' },
+                desa: { code: '', name: '' }, // Reset dependent fields
             }
         }));
         setSelectedDistrictCode(value);
-    } else if (name.startsWith('detail.desa')) {
+    } else if (name === 'detail.desa.code') {
         const selectedOption = villages.find(v => v.code === value);
         setNewUserData(prev => ({
             ...prev,
@@ -418,7 +533,9 @@ export default function UserManagementView() {
                 desa: selectedOption ? { code: value, name: selectedOption.name } : { code: '', name: '' },
             }
         }));
-    } else if (name.includes('.')) {
+    }
+    // Handle other nested detail fields (non-location)
+    else if (name.includes('.')) {
       const [parent, child, grandChild] = name.split('.');
       if (parent === 'detail') {
         if (child === 'anggota') {
@@ -442,7 +559,9 @@ export default function UserManagementView() {
             }));
         }
       }
-    } else {
+    }
+    // Handle top-level fields (userName, fullName, password, role)
+    else {
       setNewUserData(prev => ({ ...prev, [name]: value }));
     }
   }, [provinces, regencies, districts, villages, currentUserData]);
@@ -564,8 +683,8 @@ export default function UserManagementView() {
 
       {/* Modal Pengguna (Tambah/Edit) */}
       {showUserModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 overflow-y-auto p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"> {/* Updated styling */}
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 overflow-y-auto p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
             <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 border-b border-blue-200 flex-shrink-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
@@ -586,7 +705,7 @@ export default function UserManagementView() {
               </div>
             </div>
 
-            <div className="p-6 flex-1 overflow-y-auto"> {/* Added flex-1 and overflow-y-auto */}
+            <div className="p-6 flex-1 overflow-y-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="userName" className="block text-sm font-medium text-gray-700">Nama Pengguna</label>
@@ -779,3 +898,4 @@ export default function UserManagementView() {
     </ProtectedLayout>
   );
 }
+

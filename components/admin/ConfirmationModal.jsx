@@ -13,8 +13,8 @@ export default function ConfirmationModal({ show, message, onConfirm, onCancel }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm border border-gray-200"> {/* Updated styling */}
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between"> {/* Adjusted for better alignment */}
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm border border-gray-200">
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <InformationCircleIcon className="w-6 h-6 text-blue-500" />
             <h2 className="text-xl font-bold text-gray-800">Konfirmasi</h2>
@@ -31,13 +31,13 @@ export default function ConfirmationModal({ show, message, onConfirm, onCancel }
           <div className="flex justify-end space-x-3">
             <button
               onClick={onCancel}
-              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-150 ease-in-out font-medium" // Updated styling
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-150 ease-in-out font-medium"
             >
               Batal
             </button>
             <button
               onClick={onConfirm}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-150 ease-in-out font-medium" // Updated styling
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-150 ease-in-out font-medium"
             >
               Konfirmasi
             </button>
