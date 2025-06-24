@@ -70,7 +70,7 @@ export default function AdminDashboardView() {
         }
       }
       setTotalSimpanan(currentTotalSimpanan);
-      setLatestTransactions(prev => 
+      setLatestTransactions(prev =>
         [...prev, ...transactions].sort((a, b) => b.date - a.date).slice(0, 5) // Ambil 5 transaksi terbaru
       );
     });
@@ -107,7 +107,7 @@ export default function AdminDashboardView() {
         }
       }
       setTotalPinjamanDisetujui(currentTotalPinjamanDisetujui);
-      setLatestTransactions(prev => 
+      setLatestTransactions(prev =>
         [...prev, ...transactions].sort((a, b) => b.date - a.date).slice(0, 5) // Ambil 5 transaksi terbaru
       );
     });

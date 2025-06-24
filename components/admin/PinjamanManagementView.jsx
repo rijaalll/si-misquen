@@ -149,34 +149,34 @@ export default function PinjamanManagementView() {
   // Helper functions untuk styling
   const getStatusColor = (status) => {
     switch (status) {
-      case 'pending': 
+      case 'pending':
         return 'bg-amber-50 text-amber-700 border-amber-200';
-      case 'disetujui': 
+      case 'disetujui':
         return 'bg-emerald-50 text-emerald-700 border-emerald-200';
-      case 'ditolak': 
+      case 'ditolak':
         return 'bg-red-50 text-red-700 border-red-200';
-      case 'sudah bayar': 
+      case 'sudah bayar':
         return 'bg-blue-50 text-blue-700 border-blue-200';
-      case 'belum bayar': 
+      case 'belum bayar':
         return 'bg-orange-50 text-orange-700 border-orange-200';
-      default: 
+      default:
         return 'bg-gray-50 text-gray-700 border-gray-200';
     }
   };
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'pending': 
+      case 'pending':
         return <ClockIcon className="w-4 h-4" />;
-      case 'disetujui': 
+      case 'disetujui':
         return <CheckIcon className="w-4 h-4" />;
-      case 'ditolak': 
+      case 'ditolak':
         return <XMarkIcon className="w-4 h-4" />;
-      case 'sudah bayar': 
+      case 'sudah bayar':
         return <CheckIcon className="w-4 h-4" />;
-      case 'belum bayar': 
+      case 'belum bayar':
         return <ExclamationTriangleIcon className="w-4 h-4" />;
-      default: 
+      default:
         return <InformationCircleIcon className="w-4 h-4" />;
     }
   };
@@ -185,7 +185,7 @@ export default function PinjamanManagementView() {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
     return `${tanggal} ${months[bulan - 1]} ${tahun}`;
   };
-  
+
   const getTagihanColor = (detailData) => {
     const today = new Date();
     const tempoDate = new Date(detailData.tempo.tahun, detailData.tempo.bulan - 1, detailData.tempo.tanggal);
@@ -207,14 +207,14 @@ export default function PinjamanManagementView() {
 
   return (
     <ProtectedLayout allowedRoles={['admin']}>
-      <div className="space-y-6">
+      <div className="container mx-auto p-4"> {/* Added container for better spacing */}
         {/* Alert Messages */}
         {message && (
           <div className={`p-4 rounded-xl border-l-4 ${
-            messageType === 'success' 
-              ? 'bg-emerald-50 border-emerald-400 text-emerald-700' 
+            messageType === 'success'
+              ? 'bg-emerald-50 border-emerald-400 text-emerald-700'
               : 'bg-red-50 border-red-400 text-red-700'
-          }`}>
+          } mb-6`}> {/* Added margin-bottom */}
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 {messageType === 'success' ? (
@@ -230,9 +230,13 @@ export default function PinjamanManagementView() {
           </div>
         )}
 
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+            <CreditCardIcon className="w-8 h-8 text-blue-600" /> Manajemen Pinjaman
+        </h2>
+
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"> {/* Adjusted grid for responsiveness */}
+          <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200 shadow-md"> {/* Added shadow */}
             <div className="flex items-center">
               <div className="p-2 bg-blue-500 rounded-lg">
                 <CreditCardIcon className="w-6 h-6 text-white" />
@@ -243,8 +247,8 @@ export default function PinjamanManagementView() {
               </div>
             </div>
           </div>
-          
-          <div className="bg-gradient-to-r from-amber-50 to-amber-100 p-6 rounded-xl border border-amber-200">
+
+          <div className="bg-gradient-to-r from-amber-50 to-amber-100 p-6 rounded-xl border border-amber-200 shadow-md">
             <div className="flex items-center">
               <div className="p-2 bg-amber-500 rounded-lg">
                 <ClockIcon className="w-6 h-6 text-white" />
@@ -258,7 +262,7 @@ export default function PinjamanManagementView() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-emerald-50 to-emerald-100 p-6 rounded-xl border border-emerald-200">
+          <div className="bg-gradient-to-r from-emerald-50 to-emerald-100 p-6 rounded-xl border border-emerald-200 shadow-md">
             <div className="flex items-center">
               <div className="p-2 bg-emerald-500 rounded-lg">
                 <CheckIcon className="w-6 h-6 text-white" />
@@ -272,7 +276,7 @@ export default function PinjamanManagementView() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-red-50 to-red-100 p-6 rounded-xl border border-red-200">
+          <div className="bg-gradient-to-r from-red-50 to-red-100 p-6 rounded-xl border border-red-200 shadow-md">
             <div className="flex items-center">
               <div className="p-2 bg-red-500 rounded-lg">
                 <XMarkIcon className="w-6 h-6 text-white" />
@@ -288,7 +292,7 @@ export default function PinjamanManagementView() {
         </div>
 
         {/* Main Content */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden"> {/* Updated shadow and border */}
           {pinjamanData.length === 0 ? (
             <div className="text-center py-12">
               <CreditCardIcon className="mx-auto h-12 w-12 text-gray-400" />
@@ -298,7 +302,7 @@ export default function PinjamanManagementView() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto"> {/* Added overflow-x-auto for table responsiveness */}
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -388,9 +392,9 @@ export default function PinjamanManagementView() {
       {/* Modal Detail Pinjaman */}
       {showPinjamanDetailModal && selectedPinjamanToView && (
         <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"> {/* Added flex-col */}
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 border-b border-blue-200">
+            <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 border-b border-blue-200 flex-shrink-0"> {/* Added flex-shrink-0 */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-blue-500 rounded-lg">
@@ -413,7 +417,7 @@ export default function PinjamanManagementView() {
             </div>
 
             {/* Modal Content */}
-            <div className="p-6 overflow-y-auto max-h-[70vh]">
+            <div className="p-6 overflow-y-auto flex-1"> {/* Added flex-1 for scrollable content */}
               {/* Basic Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div className="space-y-4">
@@ -464,7 +468,7 @@ export default function PinjamanManagementView() {
                   <CalendarDaysIcon className="w-5 h-5 mr-2 text-blue-600" />
                   Detail Angsuran
                 </h3>
-                <div className="space-y-3 max-h-80 overflow-y-auto">
+                <div className="space-y-3 max-h-80 overflow-y-auto pr-2"> {/* Added pr-2 for scrollbar spacing */}
                   {Object.entries(selectedPinjamanToView.detail || {})
                     .sort(([, dataA], [, dataB]) => {
                       const dateA = new Date(dataA.tempo.tahun, dataA.tempo.bulan - 1, dataA.tempo.tanggal);
@@ -517,7 +521,7 @@ export default function PinjamanManagementView() {
             </div>
 
             {/* Modal Footer */}
-            <div className="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end">
+            <div className="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end flex-shrink-0"> {/* Added flex-shrink-0 */}
               <button
                 onClick={() => setShowPinjamanDetailModal(false)}
                 className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"

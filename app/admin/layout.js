@@ -50,12 +50,12 @@ export default function AdminRootLayout({ children }) {
             <ul className="space-y-2">
               {adminNavLinks.map((link) => (
                 <li key={link.href}>
-                  <Link 
-                    href={link.href} 
+                  <Link
+                    href={link.href}
                     className={`flex items-center p-3 rounded-xl transition-all duration-200 group
-                      ${pathname === link.href 
-                        ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm' 
-                        : 'hover:bg-gray-50 text-gray-700 hover:text-gray-900'
+                      ${pathname === link.href
+                        ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm'
+                        : 'hover:bg-gray-50 text-gray-700 hover:text-gray-900 border border-transparent'
                       }`}
                   >
                     <link.icon className={`w-5 h-5 mr-3 transition-colors
@@ -98,11 +98,11 @@ export default function AdminRootLayout({ children }) {
               <div className="hidden sm:flex items-center space-x-4">
                 <div className="bg-gray-50 px-3 py-2 rounded-lg border">
                   <span className="text-sm font-medium text-gray-700">
-                    {new Date().toLocaleDateString('id-ID', { 
-                      weekday: 'long', 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
+                    {new Date().toLocaleDateString('id-ID', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
                     })}
                   </span>
                 </div>
@@ -127,21 +127,21 @@ export default function AdminRootLayout({ children }) {
 
         {/* Mobile Bottom Navigation */}
         <footer className="
-          md:hidden 
-          fixed 
-          bottom-0 
-          left-0 
-          right-0 
-          bg-white 
-          border-t 
-          border-gray-200 
-          p-2 
+          md:hidden
+          fixed
+          bottom-0
+          left-0
+          right-0
+          bg-white
+          border-t
+          border-gray-200
+          p-2
           z-10
           shadow-lg
         ">
           <div className="flex justify-around items-center">
             {adminNavLinks.slice(0, 5).map((link) => (
-              <Link 
+              <Link
                 key={link.href}
                 href={link.href}
                 className={`flex flex-col items-center text-gray-600 hover:text-gray-900 transition-colors px-1 py-1

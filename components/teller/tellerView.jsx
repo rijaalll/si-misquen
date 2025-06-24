@@ -16,15 +16,22 @@ import {
   BanknotesIcon, // Icon for payment confirmation
   InformationCircleIcon, // For generic confirmation modal
   XMarkIcon, // For closing modals
-  CalendarDaysIcon // For date in detail modals
+  CalendarDaysIcon, // For date in detail modals
+  MagnifyingGlassIcon, // Icon for search input
+  HomeIcon // Icon for domicile information
 } from '@heroicons/react/24/outline'; // Importing necessary icons
 
 export default function TellerView() {
   const [pendingLoans, setPendingLoans] = useState([]);
   const [allLoans, setAllLoans] = useState([]);
+  // Stores user details for lookup {userId: {fullName, userName, detail: {nkk, provinsi, kota, kecamatan, desa, rw, rt}}}
   const [users, setUsers] = useState({});
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState(''); // 'success' or 'error'
+
+  // State for search inputs
+  const [searchTermPending, setSearchTermPending] = useState('');
+  const [searchTermAllLoans, setSearchTermAllLoans] = useState('');
 
   // State for loan detail modal
   const [showLoanDetailModal, setShowLoanDetailModal] = useState(false);
@@ -37,13 +44,20 @@ export default function TellerView() {
 
 
   useEffect(() => {
-    // Fetch users data to display full names
+    // Fetch users data to display full names and for search filtering
     const usersRef = ref(database, 'koperasi/user');
     const unsubscribeUsers = onValue(usersRef, (snapshot) => {
       const userData = snapshot.val();
       const usersMap = {};
-      for (const uid in userData) {
-        usersMap[uid] = userData[uid].fullName || userData[uid].userName;
+      if (userData) {
+        for (const uid in userData) {
+          usersMap[uid] = {
+            fullName: userData[uid].fullName || 'Tidak Diketahui',
+            userName: userData[uid].userName || 'Tidak Diketahui',
+            nkk: userData[uid].detail?.nkk || '',
+            detail: userData[uid].detail || {} // Store full detail object for domicile
+          };
+        }
       }
       setUsers(usersMap);
     });
@@ -52,17 +66,14 @@ export default function TellerView() {
     const loansRef = ref(database, 'koperasi/data/transaksi/pinjam');
     const unsubscribeLoans = onValue(loansRef, (snapshot) => {
       const data = snapshot.val();
-      const pendingList = [];
       const allList = [];
-      for (const id in data) {
-        const loan = { id, ...data[id] };
-        allList.push(loan);
-        if (loan.status === 'pending') {
-          pendingList.push(loan);
+      if (data) {
+        for (const id in data) {
+          allList.push({ id, ...data[id] });
         }
       }
-      setPendingLoans(pendingList);
-      setAllLoans(allList);
+      setAllLoans(allList); // Set all loans
+      // Filtering for pending loans is done in the render based on 'allLoans'
     });
 
     return () => {
@@ -70,6 +81,29 @@ export default function TellerView() {
       unsubscribeLoans();
     };
   }, []);
+
+  // Filtered pending loans based on search term
+  const filteredPendingLoans = pendingLoans.filter(loan => {
+    const user = users[loan.userId] || {};
+    const lowerCaseSearchTerm = searchTermPending.toLowerCase();
+    return (
+      (user.fullName && user.fullName.toLowerCase().includes(lowerCaseSearchTerm)) ||
+      (user.userName && user.userName.toLowerCase().includes(lowerCaseSearchTerm)) ||
+      (user.nkk && user.nkk.toLowerCase().includes(lowerCaseSearchTerm))
+    );
+  });
+
+  // Filtered all loans based on search term
+  const filteredAllLoans = allLoans.filter(loan => {
+    const user = users[loan.userId] || {};
+    const lowerCaseSearchTerm = searchTermAllLoans.toLowerCase();
+    return (
+      (user.fullName && user.fullName.toLowerCase().includes(lowerCaseSearchTerm)) ||
+      (user.userName && user.userName.toLowerCase().includes(lowerCaseSearchTerm)) ||
+      (user.nkk && user.nkk.toLowerCase().includes(lowerCaseSearchTerm))
+    );
+  });
+
 
   // Function to show transient message alerts
   const showMessage = (msg, type) => {
@@ -176,8 +210,8 @@ export default function TellerView() {
     const tempoDate = new Date(detailData.tempo.tahun, detailData.tempo.bulan - 1, detailData.tempo.tanggal);
 
     // Check if due this month and unpaid
-    if (detailData.status === 'belum bayar' && 
-        tempoDate.getFullYear() === today.getFullYear() && 
+    if (detailData.status === 'belum bayar' &&
+        tempoDate.getFullYear() === today.getFullYear() &&
         tempoDate.getMonth() === today.getMonth()) {
       return 'text-red-600 font-semibold'; // Red for unpaid installments due this month
     }
@@ -188,6 +222,21 @@ export default function TellerView() {
   const formatDate = (tanggal, bulan, tahun) => {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
     return `${tanggal} ${months[bulan - 1]} ${tahun}`;
+  };
+
+  const getFullAddress = (userDetail) => {
+    if (!userDetail) return 'Data alamat tidak tersedia';
+    const parts = [];
+    if (userDetail.desa?.name) parts.push(`Desa ${userDetail.desa.name}`);
+    if (userDetail.kecamatan?.name) parts.push(`Kec. ${userDetail.kecamatan.name}`);
+    if (userDetail.kota?.name) parts.push(`Kota/Kab. ${userDetail.kota.name}`);
+    if (userDetail.provinsi?.name) parts.push(`Prov. ${userDetail.provinsi.name}`);
+    
+    let address = parts.join(', ');
+    if (userDetail.rw || userDetail.rt) {
+      address += ` (RW ${userDetail.rw}, RT ${userDetail.rt})`;
+    }
+    return address || 'Data alamat tidak lengkap';
   };
 
   return (
@@ -207,8 +256,21 @@ export default function TellerView() {
           <h3 className="text-2xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <CreditCardIcon className="w-6 h-6 text-blue-600" /> Pengajuan Pinjaman Tertunda
           </h3>
-          {pendingLoans.length === 0 ? (
-            <p className="text-gray-600 py-4 text-center">Tidak ada pengajuan pinjaman yang tertunda.</p>
+          {/* Search Input for Pending Loans */}
+          <div className="relative mb-4">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="Cari berdasarkan NKK, Nama Pengguna, atau Nama Lengkap..."
+              value={searchTermPending}
+              onChange={(e) => setSearchTermPending(e.target.value)}
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            />
+          </div>
+          {filteredPendingLoans.length === 0 ? (
+            <p className="text-gray-600 py-4 text-center">Tidak ada pengajuan pinjaman yang tertunda yang cocok dengan pencarian Anda.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
@@ -235,10 +297,10 @@ export default function TellerView() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {pendingLoans.map((loan) => (
+                  {filteredPendingLoans.map((loan) => (
                     <tr key={loan.id}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{loan.userId}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{users[loan.userId] || 'Tidak Diketahui'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{users[loan.userId]?.fullName || 'Tidak Diketahui'}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {loan.total.toLocaleString('id-ID')}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{loan.tenor.bulan}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{loan.tenor.bunga}%</td>
@@ -269,8 +331,21 @@ export default function TellerView() {
           <h3 className="text-2xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <BanknotesIcon className="w-6 h-6 text-emerald-600" /> Semua Riwayat Pinjaman & Pembayaran
           </h3>
-          {allLoans.length === 0 ? (
-            <p className="text-gray-600 py-4 text-center">Tidak ada riwayat pinjaman.</p>
+          {/* Search Input for All Loans */}
+          <div className="relative mb-4">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="Cari berdasarkan NKK, Nama Pengguna, atau Nama Lengkap..."
+              value={searchTermAllLoans}
+              onChange={(e) => setSearchTermAllLoans(e.target.value)}
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            />
+          </div>
+          {filteredAllLoans.length === 0 ? (
+            <p className="text-gray-600 py-4 text-center">Tidak ada riwayat pinjaman yang cocok dengan pencarian Anda.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
@@ -294,10 +369,10 @@ export default function TellerView() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {allLoans.map((loan) => (
+                  {filteredAllLoans.map((loan) => (
                     <tr key={loan.id}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{loan.id}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{users[loan.userId] || 'Tidak Diketahui'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{users[loan.userId]?.fullName || 'Tidak Diketahui'}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {loan.total.toLocaleString('id-ID')}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(loan.status)}`}>
@@ -347,8 +422,18 @@ export default function TellerView() {
                 </div>
                 <div>
                   <p className="text-gray-500">Nama Anggota:</p>
-                  <p className="font-medium text-gray-900">{users[selectedLoanForDetail.userId] || 'Tidak Diketahui'}</p>
+                  <p className="font-medium text-gray-900">{users[selectedLoanForDetail.userId]?.fullName || 'Tidak Diketahui'}</p>
                 </div>
+                {/* Domicile Information */}
+                <div className="col-span-2"> {/* Span across two columns */}
+                  <p className="text-gray-500 flex items-center gap-1">
+                    <HomeIcon className="w-4 h-4" /> Domisili:
+                  </p>
+                  <p className="font-medium text-gray-900">
+                    {getFullAddress(users[selectedLoanForDetail.userId]?.detail)}
+                  </p>
+                </div>
+                {/* End Domicile Information */}
                 <div>
                   <p className="text-gray-500">Jumlah Pinjaman:</p>
                   <p className="font-medium text-gray-900">Rp {selectedLoanForDetail.total.toLocaleString('id-ID')}</p>

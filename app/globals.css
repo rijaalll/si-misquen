@@ -1,2 +1,6 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+* {
+    @apply transition-all duration-300 will-change-transform;
+}
