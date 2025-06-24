@@ -1,5 +1,5 @@
-// ProtectedRole.js
-// Komponen layout yang melindungi rute berdasarkan role pengguna.
+// FILE KONTROLLER UNTUK ROLE
+
 "use client";
 
 import { useEffect } from 'react';

@@ -1,5 +1,4 @@
-// app/admin/page.js (Halaman Admin)
-// Halaman untuk admin mengelola semua data (CRUD).
+// ADMIN PAGE CLIENT COMPONENT
 
 "use client";
 

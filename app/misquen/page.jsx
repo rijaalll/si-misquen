@@ -1,3 +1,5 @@
+// USER PAGE SERVER COMPONENT
+
 import UserView from "@/components/misquen/userView";
 
 export const metadata = {

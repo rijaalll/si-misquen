@@ -1,3 +1,5 @@
+// LOGIN PAGE SERVER COMPONENT
+
 import LoginView from "@/components/login/loginView"
 
 export const metadata = {

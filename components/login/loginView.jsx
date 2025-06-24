@@ -1,5 +1,4 @@
-// app/page.js (Halaman Login)
-// Ini adalah halaman utama yang akan berfungsi sebagai halaman login.
+// LOGIN PAGE CLIENT COMPONENT
 
 "use client";
 

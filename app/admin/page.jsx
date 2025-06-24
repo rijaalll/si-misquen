@@ -1,3 +1,5 @@
+// ADMIN PAGE SERVER COMPONENT
+
 import AdminView from "@/components/admin/adminView"
 
 export const metadata = {

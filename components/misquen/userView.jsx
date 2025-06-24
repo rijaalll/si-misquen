@@ -1,5 +1,4 @@
-// app/misquen/page.js (Halaman Anggota)
-// Halaman untuk anggota koperasi dengan fungsionalitas simpan, pinjam, dll.
+// USER PAGE CLIENT COMPONENT
 
 "use client";
 

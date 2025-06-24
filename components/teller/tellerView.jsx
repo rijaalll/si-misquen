@@ -1,5 +1,4 @@
-// /teller/page.js (Halaman Teller)
-// Halaman untuk teller mengelola persetujuan pinjaman dan konfirmasi pembayaran.
+// TELLER PAGE CLIENT COMPONENT
 
 "use client";
 

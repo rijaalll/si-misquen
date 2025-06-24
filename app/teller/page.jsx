@@ -1,3 +1,5 @@
+// TELLER PAGE SERVER COMPONENT
+
 import TellerView from "@/components/teller/tellerView";
 
 export const metadata = {
