@@ -30,6 +30,16 @@
                 }
             },
 
+            "bunga": {
+                "(unique id)": {
+                    "id": "(unique id)",
+                    "tenor": {
+                        "bulan": "(jumlah bulan tenor)",
+                        "bunga": "(bunga per bulan)"
+                    }
+                }
+            },
+
             "data": {
                 "transaksi": {
                     "simpan": {

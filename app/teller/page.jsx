@@ -1,6 +1,6 @@
 // TELLER PAGE SERVER COMPONENT
 
-import TellerView from "@/components/teller/tellerView";
+import { TellerView } from "@/components";
 
 export const metadata = {
   title: "Teller | Si-Misquen",
@@ -17,19 +17,15 @@ export const metadata = {
   icons: {
     icon: "/webIcon.png",
   },
-  openGraph: {
-    title: "Teller | Si-Misquen",
-    description: "Aplikasi koperasi untuk memudahkan pengelolaan anggota dan transaksi.",
-    url: "https://koperasi-app.example.com",
-    type: "website",
-    siteName: "Koperasi App",
-    images: [
-      {
-        url: "/webIcon.png",
-        alt: "Koperasi App",
-      },
-    ],
-  },
+};
+
+export const openGraph = {
+  title: "Si-Misquen",
+  description: "Aplikasi koperasi untuk memudahkan pengelolaan anggota dan transaksi.",
+  images: "/webIcon.png",
+  type: "website",
+  siteName: "Si-Misquen",
+  url: "https://koperasi-app.rpnza.my.id",
 };
 
 export default function TellerPage() {
