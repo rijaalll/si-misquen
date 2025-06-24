@@ -1,6 +1,4 @@
 // firebaseConfig.js
-// Ini adalah file konfigurasi klien Firebase.
-// Pastikan untuk mengganti placeholder dengan kredensial proyek Firebase
 
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
