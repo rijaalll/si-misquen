@@ -1,11 +1,12 @@
-// ADMIN PAGE SERVER COMPONENT
+// app/admin/page.jsx
+// Halaman server untuk dashboard admin utama.
 
-import { AdminView } from "@/components";
+import { AdminDashboardView } from "@/components";
 
 export const metadata = {
-  title: "Admin | Si-Misquen",
-  description: "Aplikasi koperasi untuk memudahkan pengelolaan anggota dan transaksi.",
-  keywords: ["koperasi", "aplikasi koperasi", "pengelolaan anggota", "transaksi koperasi"],
+  title: "Dashboard Admin | Si-Misquen",
+  description: "Dashboard utama untuk pengelolaan aplikasi koperasi oleh admin.",
+  keywords: ["koperasi", "aplikasi koperasi", "admin", "dashboard"],
   robots: {
     index: true,
     follow: true,
@@ -20,8 +21,8 @@ export const metadata = {
 };
 
 export const openGraph = {
-  title: "Si-Misquen",
-  description: "Aplikasi koperasi untuk memudahkan pengelolaan anggota dan transaksi.",
+  title: "Dashboard Admin Si-Misquen",
+  description: "Dashboard utama untuk pengelolaan aplikasi koperasi oleh admin.",
   images: "/webIcon.png",
   type: "website",
   siteName: "Si-Misquen",
@@ -29,5 +30,5 @@ export const openGraph = {
 };
 
 export default function AdminPage() {
-    return <AdminView />
+    return <AdminDashboardView />; // Menggunakan komponen DashboardView yang baru
 }

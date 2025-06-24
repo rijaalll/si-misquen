@@ -1,4 +1,5 @@
 // FILE KONTROLLER UNTUK ROLE
+// Fokus pada autentikasi dan otorisasi berbasis peran.
 
 "use client";
 
@@ -10,25 +11,26 @@ const ProtectedLayout = ({ children, allowedRoles }) => {
   const { currentUser, loading, logout } = useAuth();
   const router = useRouter();
 
-  // Effect hook to handle user authentication and role-based access
+  // Effect hook untuk menangani otentikasi pengguna dan akses berbasis peran
   useEffect(() => {
-    // Once loading is complete
+    // Setelah pemuatan selesai
     if (!loading) {
-      // If no current user is authenticated, redirect to the home page
+      // Jika tidak ada pengguna yang diautentikasi, alihkan ke halaman beranda
       if (!currentUser) {
         router.push('/');
       } 
-      // If the current user's role is not allowed for the current page
+      // Jika peran pengguna saat ini tidak diizinkan untuk halaman saat ini
       else if (!allowedRoles.includes(currentUser.role)) {
-        // Log a warning message (replacing the disruptive alert())
+        // Mencatat pesan peringatan (menggantikan alert() yang mengganggu)
         console.warn('Akses ditolak: Anda tidak memiliki akses ke halaman ini.');
-        // Redirect to the home page
+        // Alihkan ke halaman beranda
         router.push('/');
       }
     }
-  }, [currentUser, loading, router, allowedRoles]); // Dependencies for the effect
+  }, [currentUser, loading, router, allowedRoles]); // Dependensi untuk efek
 
-  // Display a loading screen while authentication status is being determined
+  // Menampilkan layar pemuatan saat status otentikasi sedang ditentukan
+  // Atau jika pengguna tidak memiliki peran yang diizinkan
   if (loading || !currentUser || !allowedRoles.includes(currentUser.role)) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -37,38 +39,9 @@ const ProtectedLayout = ({ children, allowedRoles }) => {
     );
   }
 
-  // Render the protected layout once authenticated and authorized
-  return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      {/* Header/Navbar Section */}
-      <header className="bg-gray-800 text-white p-4 shadow-lg flex flex-col md:flex-row justify-between items-center rounded-b-lg space-y-3 md:space-y-0 md:space-x-4">
-        {/* Application Title */}
-        <h1 className="text-2xl font-bold tracking-wide">Koperasi Digital</h1>
-        {/* User Info and Logout Button */}
-        <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4">
-          {/* Display User's Name and Role */}
-          <span className="text-lg text-center md:text-left font-medium">
-            Halo, {currentUser.fullName || currentUser.userName}! ({currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)})
-          </span>
-          {/* Logout Button */}
-          <button
-            onClick={logout}
-            className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg shadow-sm transition duration-150 ease-in-out font-semibold text-base"
-          >
-            Logout
-          </button>
-        </div>
-      </header>
-      {/* Main Content Area */}
-      <main className="flex-grow p-6">
-        {children} {/* Renders the child components (e.g., AdminView, UserView) */}
-      </main>
-      {/* Footer Section */}
-      <footer className="bg-gray-900 text-white p-4 text-center text-sm">
-        <p>&copy; 2024 Koperasi Digital. All rights reserved.</p>
-      </footer>
-    </div>
-  );
+  // Merender komponen anak jika pengguna diautentikasi dan diotorisasi
+  // Tanpa navbar dan footer, karena ini akan ditangani oleh layout khusus admin.
+  return <>{children}</>;
 };
 
 export default ProtectedLayout;
