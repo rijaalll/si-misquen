@@ -14,6 +14,7 @@ import {
   XMarkIcon,
   InformationCircleIcon,
   EyeIcon,
+  MinusIcon,
   BanknotesIcon, // Icon untuk simpanan
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
