@@ -120,7 +120,7 @@ export default function AdminRootLayout({ children }) {
           {/* Desktop Footer */}
           <footer className="hidden md:block bg-white border-t border-gray-200 p-4 text-center flex-shrink-0">
             <p className="text-gray-600">
-              &copy; 2024 Koperasi Digital. Semua hak dilindungi.
+              &copy; 2025 Koperasi Digital. Semua hak dilindungi.
             </p>
           </footer>
         </div>
