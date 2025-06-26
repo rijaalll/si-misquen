@@ -32,9 +32,9 @@ export default function AdminRootLayout({ children }) {
 
   return (
     <ProtectedLayout allowedRoles={['admin']}>
-      <div className="h-[100dvh] flex flex-col md:flex-row bg-gray-50 overflow-hidden">
+      <div className="h-[100dvh] flex flex-col md:flex-row bg-gray-50 overflow-hidden relative">
         {/* Sidebar - Hidden on mobile, visible on desktop */}
-        <aside className="hidden md:flex w-64 lg:w-72 bg-white border-r border-gray-200 shadow-lg flex-col">
+        <aside className="hidden md:flex w-64 lg:w-72 bg-white border-r border-gray-200 shadow-lg flex-col relative z-10">
           {/* Header Sidebar */}
           <div className="p-6 border-b border-gray-200 flex-shrink-0">
             <div className="text-2xl font-bold text-gray-800 text-center">
@@ -83,9 +83,9 @@ export default function AdminRootLayout({ children }) {
         </aside>
 
         {/* Konten Utama */}
-        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative z-0">
           {/* Header */}
-          <header className="bg-white border-b border-gray-200 shadow-sm p-4 lg:p-6 flex-shrink-0">
+          <header className="bg-white border-b border-gray-200 shadow-sm p-4 lg:p-6 flex-shrink-0 relative z-10">
             <div className="flex justify-between items-center">
               <div>
                 <h1 className="text-xl lg:text-2xl font-bold text-gray-900">
@@ -111,14 +111,14 @@ export default function AdminRootLayout({ children }) {
           </header>
 
           {/* Main Content */}
-          <main className="flex-1 overflow-y-auto">
+          <main className="flex-1 overflow-y-auto relative z-0">
             <div className="h-full">
               {children}
             </div>
           </main>
 
           {/* Desktop Footer */}
-          <footer className="hidden md:block bg-white border-t border-gray-200 p-4 text-center flex-shrink-0">
+          <footer className="hidden md:block bg-white border-t border-gray-200 p-4 text-center flex-shrink-0 relative z-10">
             <p className="text-gray-600">
               &copy; 2025 Koperasi Digital. Semua hak dilindungi.
             </p>
@@ -136,7 +136,7 @@ export default function AdminRootLayout({ children }) {
           border-t
           border-gray-200
           p-2
-          z-10
+          z-20
           shadow-lg
         ">
           <div className="flex justify-around items-center">
@@ -161,6 +161,9 @@ export default function AdminRootLayout({ children }) {
             </button>
           </div>
         </footer>
+
+        {/* Modal Overlay Area - Ensures modals appear above everything */}
+        <div id="modal-root" className="relative z-[9999]"></div>
       </div>
     </ProtectedLayout>
   );

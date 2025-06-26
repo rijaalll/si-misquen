@@ -3,13 +3,13 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import ProtectedLayout from '@/controller/role.controller';
-import { database } from '@/utils/firebaseConfig';
+import ProtectedLayout from '../../controller/role.controller'; // Jalur impor diperbarui
+import { database } from '../../utils/firebaseConfig'; // Jalur impor diperbarui
 import { ref, onValue, update, get } from 'firebase/database';
 import { v4 as uuidv4 } from 'uuid';
 import {
   ClockIcon,
-  CheckCircleIcon, // For approve loan
+  CheckCircleIcon, // For approve loan (now used for paid installments)
   XCircleIcon, // For reject loan
   EyeIcon, // For detail view modal
   CreditCardIcon, // Icon for loan management
@@ -18,7 +18,9 @@ import {
   XMarkIcon, // For closing modals
   CalendarDaysIcon, // For date in detail modals
   MagnifyingGlassIcon, // Icon for search input
-  HomeIcon // Icon for domicile information
+  HomeIcon, // Icon for domicile information
+  CheckIcon, // Used for success messages and paid status
+  ExclamationTriangleIcon // Used for error messages and unpaid status
 } from '@heroicons/react/24/outline'; // Importing necessary icons
 
 export default function TellerView() {
@@ -67,13 +69,18 @@ export default function TellerView() {
     const unsubscribeLoans = onValue(loansRef, (snapshot) => {
       const data = snapshot.val();
       const allList = [];
+      const pendingList = []; // New list for pending loans
       if (data) {
         for (const id in data) {
-          allList.push({ id, ...data[id] });
+          const loan = { id, ...data[id] };
+          allList.push(loan);
+          if (loan.status === 'pending') { // Populate pending loans explicitly
+            pendingList.push(loan);
+          }
         }
       }
-      setAllLoans(allList); // Set all loans
-      // Filtering for pending loans is done in the render based on 'allLoans'
+      setAllLoans(allList);
+      setPendingLoans(pendingList); // Set pending loans
     });
 
     return () => {
@@ -131,42 +138,31 @@ export default function TellerView() {
     setShowConfirmModal(false);
   };
 
-  // Handle loan approval
-  const handleApproveLoan = async (loanId) => {
-    openConfirmModal('Anda yakin ingin MENYETUJUI pengajuan pinjaman ini?', async () => {
+  // Handle general loan status update (replaces handleApproveLoan and handleRejectLoan)
+  const handleUpdateLoanStatus = async (loanId, newStatus) => {
+    openConfirmModal(`Anda yakin ingin mengubah status pinjaman ini menjadi "${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}"?`, async () => {
       try {
         await update(ref(database, `koperasi/data/transaksi/pinjam/${loanId}`), {
-          status: 'disetujui'
+          status: newStatus
         });
-        showMessage('Pinjaman berhasil disetujui!', 'success');
+        // If the detail modal is open for this loan, update its status
+        if (selectedLoanForDetail && selectedLoanForDetail.id === loanId) {
+          setSelectedLoanForDetail(prev => ({ ...prev, status: newStatus }));
+        }
+        showMessage(`Status pinjaman berhasil diubah menjadi "${newStatus}"!`, 'success');
       } catch (error) {
-        console.error("Error approving loan:", error);
-        showMessage(`Gagal menyetujui pinjaman: ${error.message}`, 'error');
+        console.error("Error updating loan status:", error);
+        showMessage(`Gagal mengubah status pinjaman: ${error.message}`, 'error');
       }
     });
   };
 
-  // Handle loan rejection
-  const handleRejectLoan = async (loanId) => {
-    openConfirmModal('Anda yakin ingin MENOLAK pengajuan pinjaman ini?', async () => {
-      try {
-        await update(ref(database, `koperasi/data/transaksi/pinjam/${loanId}`), {
-          status: 'ditolak'
-        });
-        showMessage('Pinjaman berhasil ditolak!', 'success');
-      } catch (error) {
-        console.error("Error rejecting loan:", error);
-        showMessage(`Gagal menolak pinjaman: ${error.message}`, 'error');
-      }
-    });
-  };
-
-  // Handle payment confirmation
-  const handleConfirmPayment = async (loanId, detailId) => {
-    openConfirmModal('Anda yakin ingin MENGKONFIRMASI pembayaran tagihan ini?', async () => {
+  // Handle payment confirmation / installment status update
+  const handleConfirmPayment = async (loanId, detailId, newStatus) => {
+    openConfirmModal(`Anda yakin ingin mengubah status pembayaran tagihan ini menjadi "${newStatus === 'sudah bayar' ? 'Sudah Bayar' : 'Belum Bayar'}"?`, async () => {
       try {
         await update(ref(database, `koperasi/data/transaksi/pinjam/${loanId}/detail/${detailId}`), {
-          status: 'sudah bayar'
+          status: newStatus
         });
         // Update the selected loan detail if the modal is open
         if (selectedLoanForDetail && selectedLoanForDetail.id === loanId) {
@@ -174,14 +170,14 @@ export default function TellerView() {
             ...prev,
             detail: {
               ...prev.detail,
-              [detailId]: { ...prev.detail[detailId], status: 'sudah bayar' }
+              [detailId]: { ...prev.detail[detailId], status: newStatus }
             }
           }));
         }
-        showMessage('Pembayaran berhasil dikonfirmasi!', 'success');
+        showMessage('Status pembayaran berhasil diperbarui!', 'success');
       } catch (error) {
         console.error("Error confirming payment:", error);
-        showMessage(`Gagal mengkonfirmasi pembayaran: ${error.message}`, 'error');
+        showMessage(`Gagal memperbarui pembayaran: ${error.message}`, 'error');
       }
     });
   };
@@ -209,11 +205,9 @@ export default function TellerView() {
     const today = new Date();
     const tempoDate = new Date(detailData.tempo.tahun, detailData.tempo.bulan - 1, detailData.tempo.tanggal);
 
-    // Check if due this month and unpaid
-    if (detailData.status === 'belum bayar' &&
-        tempoDate.getFullYear() === today.getFullYear() &&
-        tempoDate.getMonth() === today.getMonth()) {
-      return 'text-red-600 font-semibold'; // Red for unpaid installments due this month
+    // Check if due or overdue and unpaid
+    if (detailData.status === 'belum bayar' && tempoDate <= today) {
+      return 'text-red-600 font-semibold'; // Red for unpaid installments due or overdue
     }
     return 'text-gray-900'; // Default color for others
   };
@@ -244,8 +238,23 @@ export default function TellerView() {
       <div className="container mx-auto p-4">
         {/* Message Alert */}
         {message && (
-          <div className={`p-3 rounded-md mb-4 text-center ${messageType === 'success' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}>
-            {message}
+          <div className={`p-4 rounded-xl border-l-4 ${
+            messageType === 'success'
+              ? 'bg-emerald-50 border-emerald-400 text-emerald-700'
+              : 'bg-red-50 border-red-400 text-red-700'
+          } mb-6`}>
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                {messageType === 'success' ? (
+                  <CheckIcon className="h-5 w-5" />
+                ) : (
+                  <ExclamationTriangleIcon className="h-5 w-5" />
+                )}
+              </div>
+              <div className="ml-3">
+                <p className="font-medium">{message}</p>
+              </div>
+            </div>
           </div>
         )}
 
@@ -292,6 +301,9 @@ export default function TellerView() {
                       Bunga (%)
                     </th>
                     <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Aksi
                     </th>
                   </tr>
@@ -304,19 +316,21 @@ export default function TellerView() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {loan.total.toLocaleString('id-ID')}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{loan.tenor.bulan}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{loan.tenor.bunga}%</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(loan.status)}`}>
+                          {loan.status.charAt(0).toUpperCase() + loan.status.slice(1)}
+                        </span>
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                        <button
-                          onClick={() => handleApproveLoan(loan.id)}
-                          className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md shadow-sm mr-2 transition duration-150 ease-in-out flex items-center gap-1"
+                        <select
+                          value={loan.status}
+                          onChange={(e) => handleUpdateLoanStatus(loan.id, e.target.value)}
+                          className="block w-full text-sm text-black border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                         >
-                          <CheckCircleIcon className="w-4 h-4" /> Setujui
-                        </button>
-                        <button
-                          onClick={() => handleRejectLoan(loan.id)}
-                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md shadow-sm transition duration-150 ease-in-out flex items-center gap-1"
-                        >
-                          <XCircleIcon className="w-4 h-4" /> Tolak
-                        </button>
+                          <option value="pending">Pending</option>
+                          <option value="disetujui">Disetujui</option>
+                          <option value="ditolak">Ditolak</option>
+                        </select>
                       </td>
                     </tr>
                   ))}
@@ -375,9 +389,15 @@ export default function TellerView() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{users[loan.userId]?.fullName || 'Tidak Diketahui'}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {loan.total.toLocaleString('id-ID')}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(loan.status)}`}>
-                          {loan.status.charAt(0).toUpperCase() + loan.status.slice(1)}
-                        </span>
+                        <select
+                          value={loan.status}
+                          onChange={(e) => handleUpdateLoanStatus(loan.id, e.target.value)}
+                          className="block w-full text-sm border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="disetujui">Disetujui</option>
+                          <option value="ditolak">Ditolak</option>
+                        </select>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                         <button
@@ -463,8 +483,8 @@ export default function TellerView() {
                     return dateA - dateB; // Sort ascending by due date
                   })
                   .map(([detailId, tagihan]) => (
-                    <div key={detailId} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                      <div className="flex items-center gap-3">
+                    <div key={detailId} className="flex flex-col sm:flex-row items-center justify-between p-3 bg-gray-50 rounded-xl gap-2">
+                      <div className="flex items-center gap-3 w-full sm:w-auto">
                         <div className={`p-2 rounded-lg ${tagihan.status === 'sudah bayar' ? 'bg-blue-100' : 'bg-orange-100'}`}>
                           {tagihan.status === 'sudah bayar' ? (
                             <CheckCircleIcon className="w-4 h-4 text-blue-600" />
@@ -472,7 +492,7 @@ export default function TellerView() {
                             <ClockIcon className="w-4 h-4 text-orange-600" />
                           )}
                         </div>
-                        <div>
+                        <div className="flex-1">
                           <p className={`font-medium ${getTagihanColor(tagihan)}`}>
                             Rp {parseFloat(tagihan.totalTagihan).toLocaleString('id-ID')}
                           </p>
@@ -482,17 +502,21 @@ export default function TellerView() {
                           </p>
                         </div>
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(tagihan.status)} mr-2`}>
-                        {tagihan.status === 'sudah bayar' ? 'Lunas' : 'Belum Bayar'}
-                      </span>
-                      {tagihan.status === 'belum bayar' && selectedLoanForDetail.status === 'disetujui' && (
-                        <button
-                          onClick={() => handleConfirmPayment(selectedLoanForDetail.id, detailId)}
-                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 text-xs rounded-md shadow-sm transition duration-150 ease-in-out flex items-center gap-1"
-                        >
-                          <BanknotesIcon className="w-3 h-3" /> Konfirmasi Bayar
-                        </button>
-                      )}
+                      <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(tagihan.status)}`}>
+                          {tagihan.status === 'sudah bayar' ? 'Lunas' : 'Belum Bayar'}
+                        </span>
+                        {selectedLoanForDetail.status === 'disetujui' && (
+                          <select
+                            value={tagihan.status}
+                            onChange={(e) => handleConfirmPayment(selectedLoanForDetail.id, detailId, e.target.value)}
+                            className="block text-sm border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 py-1 px-2"
+                          >
+                            <option value="belum bayar">Belum Bayar</option>
+                            <option value="sudah bayar">Sudah Bayar</option>
+                          </select>
+                        )}
+                      </div>
                     </div>
                   ))}
                   {Object.keys(selectedLoanForDetail.detail || {}).length === 0 && (
@@ -545,3 +569,4 @@ export default function TellerView() {
     </ProtectedLayout>
   );
 }
+
