@@ -10,4 +10,5 @@ export { default as LaporanKeuanganView } from "./admin/LaporanKeuanganView"; //
 
 export { default as LoginView } from "./login/loginView";
 export { default as UserView } from "./misquen/userView";
+export { default as ProfileView } from "./misquen/ProfileView"; // Ekspor komponen profil baru
 export { default as TellerView } from "./teller/tellerView";

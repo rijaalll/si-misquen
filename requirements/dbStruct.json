@@ -8,9 +8,10 @@
                     "fullName": "(full name)",
                     "password": "(password)",
                     "role": "(admin, teller, user)",
-                    "detail": { // if role = teller or user 
+                    "detail": {
                         "nik": "(nomor induk kependudukan)",
                         "nkk": "(nomor kartu keluarga)",
+                        "telepon": "(nomor telepon)",
                         "hari": "(hari lahir)",
                         "tanggal": "(tanggal lahir)",
                         "bulan": "(bulan lahir)",
@@ -22,14 +23,13 @@
                         "desa": "(desa)",
                         "rw": "(rw)",
                         "rt": "(rt)",
-                        "anggota": { // if role = user
+                        "anggota": {
                             "pekerjaan": "(pekerjaan)",
                             "pendapatan": "(pendapatan /bln)"
                         }
                     }
                 }
             },
-
             "bunga": {
                 "(unique id)": {
                     "id": "(unique id)",
@@ -39,7 +39,6 @@
                     }
                 }
             },
-
             "data": {
                 "transaksi": {
                     "simpan": {
@@ -69,26 +68,8 @@
                                 "bulan": "(jumlah bulan tenor)",
                                 "bunga": "(bunga per bulan)"
                             },
-                            "detail": { //misal tenor 3 bulan
+                            "detail": {
                                 "(unique id bulan ke 1)": {
-                                    "status": "(belum bayar, sudah bayar)",
-                                    "totalTagihan": "(total tagihan hasil bagi total pinjaman + bunga per bulan)",
-                                    "tempo": {
-                                        "tanggal": "(tanggal tempo)",
-                                        "bulan": "(bulan tempo)",
-                                        "tahun": "(tahun tempo)"
-                                    }
-                                },
-                                "(unique id bulan ke 2)": {
-                                    "status": "(belum bayar, sudah bayar)",
-                                    "totalTagihan": "(total tagihan hasil bagi total pinjaman + bunga per bulan)",
-                                    "tempo": {
-                                        "tanggal": "(tanggal tempo)",
-                                        "bulan": "(bulan tempo)",
-                                        "tahun": "(tahun tempo)"
-                                    }
-                                },
-                                "(unique id bulan ke 3)": {
                                     "status": "(belum bayar, sudah bayar)",
                                     "totalTagihan": "(total tagihan hasil bagi total pinjaman + bunga per bulan)",
                                     "tempo": {
@@ -102,7 +83,6 @@
                     }
                 }
             }
-
         }
     }
 ]
